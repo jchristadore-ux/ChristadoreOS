@@ -7,3 +7,7 @@ dist-ssr
 *.local
 .vite
 npm-debug.log*
+
+# Worker
+worker/node_modules
+worker/.wrangler

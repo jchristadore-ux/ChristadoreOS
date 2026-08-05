@@ -1,0 +1,14 @@
+{
+  "name": "christadoreos-bank-worker",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241106.0",
+    "typescript": "^5.6.2",
+    "wrangler": "^3.86.0"
+  }
+}

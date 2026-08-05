@@ -1,9 +1,11 @@
 import { useCallback } from 'react';
 import {
+  BANK_CACHE_ID,
   DEFAULT_SETTINGS,
   GOOGLE_CACHE_ID,
   SETTINGS_ID,
   type AppSettings,
+  type BankCache,
   type GoogleCacheMeta,
 } from './storage';
 import { useCollection } from './storage/useCollection';
@@ -68,4 +70,34 @@ export function useGoogleCacheMeta(): {
   );
 
   return { meta, save };
+}
+
+export function useBankCache(): {
+  cache: BankCache;
+  save: (patch: Partial<Omit<BankCache, 'id' | 'createdAt' | 'updatedAt'>>) => Promise<void>;
+} {
+  const { items, create, update } = useCollection<BankCache>('settings');
+  const record = items.find((item) => item.id === BANK_CACHE_ID);
+
+  const cache: BankCache = record ?? {
+    id: BANK_CACHE_ID,
+    connected: false,
+    accounts: [],
+    fetchedAt: 0,
+    createdAt: 0,
+    updatedAt: 0,
+  };
+
+  const save = useCallback(
+    async (patch: Partial<Omit<BankCache, 'id' | 'createdAt' | 'updatedAt'>>) => {
+      if (record) {
+        await update(BANK_CACHE_ID, patch);
+        return;
+      }
+      await create({ id: BANK_CACHE_ID, connected: false, accounts: [], fetchedAt: 0, ...patch });
+    },
+    [record, create, update],
+  );
+
+  return { cache, save };
 }
