@@ -68,7 +68,7 @@ export default function Today() {
       ? { text: 'text-red-600', bar: 'bg-red-500' }
       : budgetPct >= 80
         ? { text: 'text-amber-600', bar: 'bg-amber-500' }
-        : { text: 'text-ink-700', bar: 'bg-clay-400' };
+        : { text: 'text-ink-700', bar: 'bg-iris-400' };
 
   const todayReminders = useMemo(
     () =>
@@ -100,14 +100,14 @@ export default function Today() {
               <li key={event.id} className="flex items-center gap-2.5">
                 <span
                   className={`h-8 w-1.5 shrink-0 rounded-full ${
-                    event.source === 'google' ? 'bg-sand-400' : EVENT_COLORS[event.color].dot
+                    event.source === 'google' ? 'bg-mist-400' : EVENT_COLORS[event.color].dot
                   }`}
                 />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5">
                     <span className="truncate font-semibold text-ink-700">{event.title}</span>
                     {event.source === 'google' ? (
-                      <span className="shrink-0 rounded-full bg-sand-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink-400">
+                      <span className="shrink-0 rounded-full bg-mist-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink-400">
                         Google
                       </span>
                     ) : null}
@@ -132,7 +132,7 @@ export default function Today() {
           </p>
           {settings.dailyBudget > 0 ? (
             <>
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-sand-200">
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-mist-200">
                 <div
                   className={`h-full rounded-full transition-all ${budgetTone.bar}`}
                   style={{ width: `${Math.min(100, budgetPct)}%` }}
@@ -208,7 +208,7 @@ export default function Today() {
           <ul className="flex flex-col gap-2">
             {todayReminders.map(({ reminder, next }) => (
               <li key={reminder.id} className="flex items-center gap-2.5">
-                <span className="text-clay-400">
+                <span className="text-iris-400">
                   {reminder.isAlarm ? <AlarmClock size={18} /> : <Bell size={18} />}
                 </span>
                 <span className="min-w-0 flex-1 truncate font-medium text-ink-700">

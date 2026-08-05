@@ -1,4 +1,4 @@
-# FamilyOS
+# ChristadoreOS
 
 A calm home base for one household — calendar, groceries, spending, reminders, and
 countdowns — as an installable, mobile-first PWA that runs entirely in the browser.
@@ -26,7 +26,7 @@ and no login.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173/FamilyOS/
+npm run dev        # http://localhost:5173/ChristadoreOS/
 ```
 
 That's the whole setup. No environment variables are required. The app starts
@@ -50,12 +50,16 @@ consume data through the `useCollection(name)` hook — no component imports an
 adapter directly. Settings shows a **Local mode** badge so it is always obvious
 where the data lives.
 
+The `familyos:*` key prefix predates the rename and is deliberately left alone:
+it is invisible to users, and changing it would orphan every record already
+stored on a device.
+
 ## 1. Deploy to GitHub Pages
 
 The build is a static bundle served from a repository subpath, so it uses
-`HashRouter` (GitHub Pages has no SPA fallback) and a `base` of `/FamilyOS/`.
+`HashRouter` (GitHub Pages has no SPA fallback) and a `base` of `/ChristadoreOS/`.
 
-1. **Create the repo.** Name it `FamilyOS` — the repo name has to match `base` in
+1. **Create the repo.** Name it `ChristadoreOS` — the repo name has to match `base` in
    `vite.config.ts`, and GitHub Pages paths are **case-sensitive**, so the casing
    has to match too. If you name it something else, change that one line (and the
    matching `base`, `scope`, and `start_url` in the `VitePWA` config) to
@@ -65,7 +69,7 @@ The build is a static bundle served from a repository subpath, so it uses
 2. **Push the code.**
 
    ```bash
-   git remote add origin https://github.com/<username>/FamilyOS.git
+   git remote add origin https://github.com/<username>/ChristadoreOS.git
    git push -u origin main
    ```
 
@@ -89,7 +93,7 @@ The build is a static bundle served from a repository subpath, so it uses
 6. **Open it.** The live URL is:
 
    ```
-   https://<username>.github.io/FamilyOS/
+   https://<username>.github.io/ChristadoreOS/
    ```
 
    On a phone, use the browser's **Add to Home Screen** to install it. On iOS this
@@ -97,7 +101,7 @@ The build is a static bundle served from a repository subpath, so it uses
 
 ## 2. Google Calendar setup
 
-FamilyOS reads Google Calendar directly from the browser with the Google Identity
+ChristadoreOS reads Google Calendar directly from the browser with the Google Identity
 Services token client and the Calendar REST API — no server, no refresh tokens. The
 access token lives in memory and `sessionStorage`, and events are pulled read-only.
 
@@ -135,10 +139,10 @@ access token lives in memory and `sessionStorage`, and events are pulled read-on
    ```
 
 7. **Connect.** In the app: **Settings → Google Calendar → Connect**, then tick the
-   calendars to include. FamilyOS caches the next 60 days, refreshes on open when
+   calendars to include. ChristadoreOS caches the next 60 days, refreshes on open when
    the cache is older than 15 minutes, and has a manual refresh button. Google
    events appear inline on the calendar with a dashed treatment and a "Google" tag,
-   and cannot be edited from FamilyOS.
+   and cannot be edited from ChristadoreOS.
 
 ## A note on reminders
 

@@ -107,7 +107,7 @@ export default function Reminders() {
     <>
       <PageHeader
         title="Reminders"
-        subtitle="Nudges while FamilyOS is open"
+        subtitle="Nudges while ChristadoreOS is open"
         action={
           <Button size="sm" onClick={openNew}>
             <Plus size={18} />
@@ -147,7 +147,7 @@ export default function Reminders() {
             <div className="flex items-center gap-3">
               <span
                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${
-                  reminder.enabled ? 'bg-clay-50 text-clay-500' : 'bg-sand-100 text-sand-400'
+                  reminder.enabled ? 'bg-iris-50 text-iris-500' : 'bg-mist-100 text-mist-400'
                 }`}
               >
                 {reminder.isAlarm ? <AlarmClock size={20} /> : <Bell size={20} />}
@@ -239,8 +239,8 @@ export default function Reminders() {
             checked={draft.isAlarm}
             onChange={(isAlarm) => setDraft({ ...draft, isAlarm })}
           />
-          <p className="rounded-2xl bg-sand-100 p-3 text-xs text-ink-500">
-            Browser notifications only fire reliably while FamilyOS is open or installed as a PWA.
+          <p className="rounded-2xl bg-mist-100 p-3 text-xs text-ink-500">
+            Browser notifications only fire reliably while ChristadoreOS is open or installed as a PWA.
             On iOS, add it to your Home Screen first.
           </p>
         </div>

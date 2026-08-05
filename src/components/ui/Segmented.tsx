@@ -10,7 +10,7 @@ export function Segmented<T extends string>({ value, options, onChange, label }:
     <div
       role="tablist"
       aria-label={label}
-      className="inline-flex rounded-2xl bg-sand-100 p-1 text-sm font-semibold"
+      className="inline-flex rounded-2xl bg-mist-100 p-1 text-sm font-semibold"
     >
       {options.map((option) => {
         const active = option.value === value;

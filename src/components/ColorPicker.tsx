@@ -28,7 +28,7 @@ export function ColorPicker({ value, onChange, label = 'Color' }: ColorPickerPro
             >
               <span
                 className={`flex h-8 w-8 items-center justify-center rounded-full ${tokens.dot} ${
-                  active ? 'ring-2 ring-ink-600 ring-offset-2 ring-offset-sand-50' : ''
+                  active ? 'ring-2 ring-ink-600 ring-offset-2 ring-offset-mist-50' : ''
                 }`}
               >
                 {active ? <Check size={16} className="text-white" /> : null}

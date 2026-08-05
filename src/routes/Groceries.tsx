@@ -94,9 +94,9 @@ function GroceryRow({ item, onToggle, onDelete }: RowProps) {
         className="no-select relative flex min-h-[52px] cursor-pointer touch-pan-y items-center gap-3 bg-white px-3 py-2 transition-transform"
       >
         {item.checked ? (
-          <CheckCircle2 size={22} className="shrink-0 text-clay-400" />
+          <CheckCircle2 size={22} className="shrink-0 text-iris-400" />
         ) : (
-          <Circle size={22} className="shrink-0 text-sand-300" />
+          <Circle size={22} className="shrink-0 text-mist-300" />
         )}
         <span className="min-w-0 flex-1">
           <span
@@ -221,10 +221,10 @@ export default function Groceries() {
                 <span className="text-sm font-bold uppercase tracking-wide text-ink-400">
                   {group.category}
                 </span>
-                <span className="text-sm text-sand-400">{group.items.length}</span>
+                <span className="text-sm text-mist-400">{group.items.length}</span>
                 <ChevronDown
                   size={18}
-                  className={`ml-auto text-sand-400 transition-transform ${
+                  className={`ml-auto text-mist-400 transition-transform ${
                     isCollapsed ? '-rotate-90' : ''
                   }`}
                 />
@@ -251,11 +251,11 @@ export default function Groceries() {
             <div className="flex min-h-[44px] items-center gap-2 px-2">
               <span aria-hidden="true">✅</span>
               <span className="text-sm font-bold uppercase tracking-wide text-ink-400">Got it</span>
-              <span className="text-sm text-sand-400">{done.length}</span>
+              <span className="text-sm text-mist-400">{done.length}</span>
               <button
                 type="button"
                 onClick={clearChecked}
-                className="ml-auto min-h-[44px] px-2 text-sm font-semibold text-clay-500"
+                className="ml-auto min-h-[44px] px-2 text-sm font-semibold text-iris-500"
               >
                 Clear checked
               </button>
@@ -289,7 +289,7 @@ export default function Groceries() {
 
       {/* Quick add: pinned above the tab bar on mobile, inline on desktop. */}
       <div className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-30 px-4 md:static md:mt-4 md:px-0">
-        <div className="mx-auto flex max-w-3xl items-center gap-2 rounded-2xl border border-sand-200 bg-white p-2 shadow-card">
+        <div className="mx-auto flex max-w-3xl items-center gap-2 rounded-2xl border border-mist-200 bg-white p-2 shadow-card">
           <input
             value={quickName}
             onChange={(event) => setQuickName(event.target.value)}
@@ -298,12 +298,12 @@ export default function Groceries() {
             }}
             placeholder="Add an item…"
             aria-label="Quick add a grocery item"
-            className="min-h-[44px] flex-1 rounded-xl bg-transparent px-2 outline-none placeholder:text-sand-400"
+            className="min-h-[44px] flex-1 rounded-xl bg-transparent px-2 outline-none placeholder:text-mist-400"
           />
           <IconButton
             label="Add item"
             onClick={() => void addQuick()}
-            className="bg-clay-400 text-white hover:bg-clay-500 active:bg-clay-600"
+            className="bg-iris-400 text-white hover:bg-iris-500 active:bg-iris-600"
           >
             <Plus size={20} />
           </IconButton>

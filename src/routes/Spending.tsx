@@ -210,10 +210,10 @@ export default function Spending() {
                   {Math.round(budgetPct)}%
                 </span>
               </div>
-              <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-sand-200">
+              <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-mist-200">
                 <div
                   className={`h-full rounded-full transition-all ${
-                    budgetPct > 100 ? 'bg-red-500' : budgetPct >= 80 ? 'bg-amber-500' : 'bg-clay-400'
+                    budgetPct > 100 ? 'bg-red-500' : budgetPct >= 80 ? 'bg-amber-500' : 'bg-iris-400'
                   }`}
                   style={{ width: `${Math.min(100, budgetPct)}%` }}
                 />
@@ -234,7 +234,7 @@ export default function Spending() {
                     <span className="font-semibold text-ink-600">{entry.category}</span>
                     <span className="tabular-nums text-ink-500">{formatMoney(entry.amount)}</span>
                   </div>
-                  <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-sand-100">
+                  <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-mist-100">
                     <div
                       className="h-full rounded-full"
                       style={{
@@ -254,16 +254,16 @@ export default function Spending() {
           <div className="h-48 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -18 }}>
-                <CartesianGrid stroke="#E9E1D5" strokeDasharray="3 3" vertical={false} />
+                <CartesianGrid stroke="#E2E6F1" strokeDasharray="3 3" vertical={false} />
                 <XAxis
                   dataKey="short"
-                  tick={{ fill: '#8B8279', fontSize: 11 }}
+                  tick={{ fill: '#7A8199', fontSize: 11 }}
                   tickLine={false}
-                  axisLine={{ stroke: '#E9E1D5' }}
+                  axisLine={{ stroke: '#E2E6F1' }}
                   interval={4}
                 />
                 <YAxis
-                  tick={{ fill: '#8B8279', fontSize: 11 }}
+                  tick={{ fill: '#7A8199', fontSize: 11 }}
                   tickLine={false}
                   axisLine={false}
                   width={52}
@@ -274,14 +274,14 @@ export default function Spending() {
                   labelFormatter={(_label: string, payload) => payload?.[0]?.payload.label ?? ''}
                   contentStyle={{
                     borderRadius: 12,
-                    border: '1px solid #E9E1D5',
+                    border: '1px solid #E2E6F1',
                     fontSize: 13,
                   }}
                 />
                 <Line
                   type="monotone"
                   dataKey="total"
-                  stroke="#C2703D"
+                  stroke="#4F2BE7"
                   strokeWidth={2}
                   dot={false}
                   activeDot={{ r: 4 }}
@@ -306,7 +306,7 @@ export default function Spending() {
               }
             />
           ) : (
-            <ul className="flex flex-col divide-y divide-sand-100">
+            <ul className="flex flex-col divide-y divide-mist-100">
               {inRange.map((expense) => {
                 const member = memberFor(expense.memberId);
                 return (

@@ -89,11 +89,11 @@ export function EventRow({ event, members, onOpen }: EventRowProps) {
       onClick={onOpen}
       className={`flex min-h-[52px] w-full items-center gap-3 rounded-2xl border px-3 py-2 text-left transition-colors ${
         isGoogle
-          ? 'border-dashed border-sand-300 bg-sand-100/70'
+          ? 'border-dashed border-mist-300 bg-mist-100/70'
           : `${tokens.border} ${tokens.soft}`
       }`}
     >
-      <span className={`h-8 w-1.5 shrink-0 rounded-full ${isGoogle ? 'bg-sand-400' : tokens.dot}`} />
+      <span className={`h-8 w-1.5 shrink-0 rounded-full ${isGoogle ? 'bg-mist-400' : tokens.dot}`} />
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
           <span className="truncate font-semibold text-ink-700">{event.title}</span>
@@ -293,12 +293,12 @@ export default function CalendarRoute() {
                   type="button"
                   onClick={() => setSelectedDay(key)}
                   className={`flex min-h-[56px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 transition-colors ${
-                    isToday(day) ? 'bg-clay-50 ring-1 ring-clay-200' : 'hover:bg-sand-100'
+                    isToday(day) ? 'bg-iris-50 ring-1 ring-iris-200' : 'hover:bg-mist-100'
                   } ${outside ? 'opacity-40' : ''}`}
                 >
                   <span
                     className={`text-sm ${
-                      isToday(day) ? 'font-bold text-clay-500' : 'font-medium text-ink-600'
+                      isToday(day) ? 'font-bold text-iris-500' : 'font-medium text-ink-600'
                     }`}
                   >
                     {format(day, 'd')}
@@ -309,7 +309,7 @@ export default function CalendarRoute() {
                         key={event.id}
                         className={`h-1.5 w-1.5 rounded-full ${
                           event.source === 'google'
-                            ? 'bg-sand-400 ring-1 ring-sand-300'
+                            ? 'bg-mist-400 ring-1 ring-mist-300'
                             : EVENT_COLORS[event.color].dot
                         }`}
                       />
@@ -348,7 +348,7 @@ export default function CalendarRoute() {
                   <h2 className="text-sm font-bold uppercase tracking-wide text-ink-400">
                     {friendlyDateKey(group.key)}
                   </h2>
-                  <span className="text-xs text-sand-400">
+                  <span className="text-xs text-mist-400">
                     {format(fromDateKey(group.key), 'MMM d')}
                   </span>
                   <IconButton
@@ -391,7 +391,7 @@ export default function CalendarRoute() {
               }}
               placeholder="Quick add…"
               aria-label="Quick add an event"
-              className="min-h-[48px] flex-1 rounded-2xl border border-sand-200 bg-white px-3.5 outline-none placeholder:text-sand-400 focus:border-clay-300 focus:ring-2 focus:ring-clay-200"
+              className="min-h-[48px] flex-1 rounded-2xl border border-mist-200 bg-white px-3.5 outline-none placeholder:text-mist-400 focus:border-iris-300 focus:ring-2 focus:ring-iris-200"
             />
             <Button onClick={() => void quickAdd()} disabled={!quickTitle.trim()}>
               Add
@@ -480,7 +480,7 @@ export default function CalendarRoute() {
                 </p>
               ) : null}
               {openEvent.source === 'google' ? (
-                <p className="rounded-2xl bg-sand-100 p-3 text-xs text-ink-500">
+                <p className="rounded-2xl bg-mist-100 p-3 text-xs text-ink-500">
                   From Google Calendar
                   {openEvent.calendarName ? ` · ${openEvent.calendarName}` : ''}. Read-only here —
                   edit it in Google Calendar.

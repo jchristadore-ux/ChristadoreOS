@@ -1,7 +1,7 @@
 import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 
 const CONTROL =
-  'w-full min-h-[48px] rounded-2xl border border-sand-200 bg-white px-3.5 py-2.5 text-ink-700 placeholder:text-sand-400 focus:border-clay-300 focus:outline-none focus:ring-2 focus:ring-clay-200';
+  'w-full min-h-[48px] rounded-2xl border border-mist-200 bg-white px-3.5 py-2.5 text-ink-700 placeholder:text-mist-400 focus:border-iris-300 focus:outline-none focus:ring-2 focus:ring-iris-200';
 
 interface LabelledProps {
   label: string;
@@ -84,7 +84,7 @@ export function Toggle({ label, description, checked, onChange }: ToggleProps) {
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex min-h-[48px] w-full items-center gap-3 rounded-2xl border border-sand-200 bg-white px-3.5 py-2.5 text-left"
+      className="flex min-h-[48px] w-full items-center gap-3 rounded-2xl border border-mist-200 bg-white px-3.5 py-2.5 text-left"
     >
       <span className="flex-1">
         <span className="block text-sm font-semibold text-ink-600">{label}</span>
@@ -92,7 +92,7 @@ export function Toggle({ label, description, checked, onChange }: ToggleProps) {
       </span>
       <span
         className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
-          checked ? 'bg-clay-400' : 'bg-sand-300'
+          checked ? 'bg-iris-400' : 'bg-mist-300'
         }`}
       >
         <span
