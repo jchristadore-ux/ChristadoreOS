@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import { format, isSameDay } from 'date-fns';
+import { format, formatDistanceToNow, isSameDay } from 'date-fns';
 import {
   AlarmClock,
   Bell,
   CalendarDays,
+  Landmark,
   Receipt,
   ShoppingCart,
   Timer,
@@ -16,6 +17,7 @@ import { eventTimeLabel } from './Calendar';
 import { BILL_CATEGORY_EMOJI, EVENT_COLORS } from '../lib/constants';
 import { formatMoney, formatMoneyShort, greeting, parseIso, toDateKey } from '../lib/format';
 import { occurrencesDueToday, occurrencesOverdue } from '../lib/bills';
+import { useBankBalances } from '../lib/useBankBalances';
 import { nextOccurrence } from '../lib/notifications';
 import type {
   Bill,
@@ -42,6 +44,7 @@ export default function Today() {
   const { items: reminders } = useCollection<Reminder>('reminders');
   const { items: bills } = useCollection<Bill>('bills');
   const { settings } = useAppSettings();
+  const bank = useBankBalances();
 
   const todayEvents = useMemo(
     () =>
@@ -107,6 +110,30 @@ export default function Today() {
         <h1 className="text-2xl font-bold tracking-tight text-ink-700">{greeting(now)}</h1>
         <p className="text-sm text-ink-400">{format(now, 'EEEE, MMMM d')}</p>
       </header>
+
+      {bank.configured ? (
+        <LinkCard to="/settings">
+          <CardHeader title="Balance" icon={<Landmark size={18} />} chevron />
+          {bank.connected && bank.accounts.length > 0 ? (
+            <>
+              <p className="text-3xl font-bold tracking-tight text-ink-700">
+                {formatMoney(bank.total)}
+              </p>
+              <p className="mt-1.5 truncate text-xs text-ink-400">
+                {bank.accounts.length === 1
+                  ? bank.accounts[0]?.name
+                  : `across ${bank.accounts.length} accounts`}
+                {bank.fetchedAt > 0 ? ` · ${formatDistanceToNow(bank.fetchedAt)} ago` : ''}
+                {bank.loading ? ' · refreshing…' : ''}
+              </p>
+            </>
+          ) : (
+            <EmptyLine>
+              {bank.error || 'Not connected to a bank yet. Finish setup in Settings.'}
+            </EmptyLine>
+          )}
+        </LinkCard>
+      ) : null}
 
       <LinkCard to="/calendar">
         <CardHeader title="Today" icon={<CalendarDays size={18} />} chevron />

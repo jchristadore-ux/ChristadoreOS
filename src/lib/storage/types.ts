@@ -169,6 +169,7 @@ export interface Member extends BaseRecord {
  */
 export const SETTINGS_ID = 'app' as const;
 export const GOOGLE_CACHE_ID = 'google-cache' as const;
+export const BANK_CACHE_ID = 'bank-cache' as const;
 
 export interface AppSettings extends BaseRecord {
   id: typeof SETTINGS_ID;
@@ -186,7 +187,27 @@ export interface GoogleCacheMeta extends BaseRecord {
   connectedEmail: string;
 }
 
-export type SettingsRecord = AppSettings | GoogleCacheMeta;
+/**
+ * Last balances fetched from the bank worker. Cached so the Today card can
+ * paint a figure immediately instead of waiting on the network, and so a
+ * failed refresh still shows the last known good number with its timestamp.
+ */
+export interface BankCache extends BaseRecord {
+  id: typeof BANK_CACHE_ID;
+  connected: boolean;
+  accounts: Array<{
+    id: string;
+    name: string;
+    org: string;
+    balance: number;
+    availableBalance: number | null;
+    currency: string;
+    asOf: number;
+  }>;
+  fetchedAt: number;
+}
+
+export type SettingsRecord = AppSettings | GoogleCacheMeta | BankCache;
 
 export const DEFAULT_SETTINGS: Omit<AppSettings, 'createdAt' | 'updatedAt'> = {
   id: SETTINGS_ID,

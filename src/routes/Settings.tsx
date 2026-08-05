@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Check, HardDrive, Plus, RefreshCw, Trash2, Pencil } from 'lucide-react';
+import { Check, HardDrive, Landmark, Plus, RefreshCw, Trash2, Pencil } from 'lucide-react';
 import { PageHeader } from '../components/AppShell';
 import { Button, IconButton } from '../components/ui/Button';
 import { Card, CardHeader } from '../components/ui/Card';
@@ -17,6 +17,9 @@ import {
   listGoogleCalendars,
   type GoogleCalendarSummary,
 } from '../lib/google';
+import { claimSetupToken, disconnectBank, getBankConfig, setBankConfig } from '../lib/bank';
+import { useBankBalances } from '../lib/useBankBalances';
+import { formatMoney } from '../lib/format';
 import { clearAllData } from '../lib/bootstrap';
 import { DEFAULT_SETTINGS, storage, type EventColor, type Member } from '../lib/storage';
 import { useCollection } from '../lib/storage/useCollection';
@@ -36,6 +39,13 @@ export default function Settings() {
   const { settings, save } = useAppSettings();
   const { save: saveMeta } = useGoogleCacheMeta();
   const sync = useGoogleSync();
+  const bank = useBankBalances();
+
+  const [bankForm, setBankForm] = useState(() => getBankConfig());
+  const [setupToken, setSetupToken] = useState('');
+  const [bankBusy, setBankBusy] = useState(false);
+  const [bankError, setBankError] = useState('');
+  const [bankNote, setBankNote] = useState('');
 
   const [budgetInput, setBudgetInput] = useState(String(settings.dailyBudget));
   const [memberSheet, setMemberSheet] = useState(false);
@@ -115,6 +125,44 @@ export default function Settings() {
     if (editingMember) await update(editingMember, { ...memberDraft, name });
     else await create({ ...memberDraft, name });
     setMemberSheet(false);
+  };
+
+  const saveBankConfig = () => {
+    setBankConfig(bankForm);
+    setBankForm(getBankConfig());
+    setBankNote('Saved on this device.');
+    setBankError('');
+  };
+
+  const connectBank = async () => {
+    setBankBusy(true);
+    setBankError('');
+    setBankNote('');
+    try {
+      setBankConfig(bankForm);
+      await claimSetupToken(setupToken);
+      setSetupToken('');
+      await bank.refresh();
+      setBankNote('Connected.');
+    } catch (caught) {
+      setBankError(caught instanceof Error ? caught.message : 'Could not connect.');
+    } finally {
+      setBankBusy(false);
+    }
+  };
+
+  const disconnectTheBank = async () => {
+    setBankBusy(true);
+    setBankError('');
+    try {
+      await disconnectBank();
+      await bank.refresh();
+      setBankNote('Disconnected.');
+    } catch (caught) {
+      setBankError(caught instanceof Error ? caught.message : 'Could not disconnect.');
+    } finally {
+      setBankBusy(false);
+    }
   };
 
   const reset = async () => {
@@ -282,6 +330,100 @@ export default function Settings() {
             <p className="mt-2 rounded-2xl bg-amber-50 p-3 text-xs text-amber-900">
               {googleError || sync.error}
             </p>
+          ) : null}
+        </Card>
+
+        <Card>
+          <CardHeader title="Bank balance" icon={<Landmark size={18} />} />
+          <p className="mb-3 text-xs text-ink-400">
+            Balances come from SimpleFIN through your own Cloudflare worker. The worker holds the
+            credential; this app only ever receives the numbers. Both fields below stay on this
+            device and are never built into the app.
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <Input
+              label="Worker URL"
+              hint="https://christadoreos-bank.<your-subdomain>.workers.dev"
+              value={bankForm.workerUrl}
+              onChange={(event) => setBankForm({ ...bankForm, workerUrl: event.target.value })}
+              placeholder="https://christadoreos-bank.example.workers.dev"
+            />
+            <Input
+              label="Household key"
+              type="password"
+              hint="Must match the HOUSEHOLD_KEY secret on the worker"
+              value={bankForm.householdKey}
+              onChange={(event) => setBankForm({ ...bankForm, householdKey: event.target.value })}
+            />
+            <Button variant="secondary" size="sm" onClick={saveBankConfig}>
+              Save connection
+            </Button>
+          </div>
+
+          {bank.connected ? (
+            <div className="mt-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700">
+                  <Check size={12} />
+                  Connected
+                </span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="ml-auto"
+                  disabled={bank.loading}
+                  onClick={() => void bank.refresh()}
+                >
+                  <RefreshCw size={16} className={bank.loading ? 'animate-spin' : ''} />
+                  Refresh
+                </Button>
+              </div>
+              <ul className="flex flex-col divide-y divide-mist-100">
+                {bank.accounts.map((account) => (
+                  <li key={account.id} className="flex items-center gap-3 py-2">
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-ink-700">
+                        {account.name}
+                      </span>
+                      {account.org ? (
+                        <span className="block truncate text-xs text-ink-400">{account.org}</span>
+                      ) : null}
+                    </span>
+                    <span className="shrink-0 tabular-nums font-semibold text-ink-700">
+                      {formatMoney(account.balance)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <Button variant="secondary" size="sm" onClick={() => void disconnectTheBank()} disabled={bankBusy}>
+                Disconnect bank
+              </Button>
+            </div>
+          ) : (
+            <div className="mt-4 flex flex-col gap-3">
+              <Input
+                label="SimpleFIN setup token"
+                hint="One-time token from beta-bridge.simplefin.org — it can only be claimed once"
+                value={setupToken}
+                onChange={(event) => setSetupToken(event.target.value)}
+              />
+              <Button
+                size="sm"
+                onClick={() => void connectBank()}
+                disabled={bankBusy || !setupToken.trim() || !bankForm.workerUrl.trim()}
+              >
+                {bankBusy ? 'Connecting…' : 'Connect bank'}
+              </Button>
+            </div>
+          )}
+
+          {bankError || bank.error ? (
+            <p className="mt-2 rounded-2xl bg-amber-50 p-3 text-xs text-amber-900">
+              {bankError || bank.error}
+            </p>
+          ) : bankNote ? (
+            <p className="mt-2 text-xs text-emerald-700">{bankNote}</p>
           ) : null}
         </Card>
 
