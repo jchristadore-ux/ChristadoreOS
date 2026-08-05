@@ -64,6 +64,45 @@ jobs:
           fi
           echo "Both secrets are present."
 
+      # Cloudflare will not serve a Worker until the account owns a workers.dev
+      # subdomain, and the first Worker on an account never has one. `wrangler
+      # deploy` can only ask for it interactively, so in CI it uploads the code
+      # and then fails at the last step. Claim one over the API instead, which
+      # keeps the whole deploy inside GitHub with no dashboard visit.
+      - name: Ensure workers.dev subdomain
+        env:
+          API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          account_id=$(sed -n 's/^account_id *= *"\(.*\)"/\1/p' wrangler.toml)
+          api="https://api.cloudflare.com/client/v4/accounts/$account_id/workers/subdomain"
+          auth="Authorization: Bearer $API_TOKEN"
+
+          current=$(curl -sS -X GET "$api" -H "$auth" | jq -r '.result.subdomain // empty')
+          if [ -n "$current" ]; then
+            echo "Already registered: $current.workers.dev"
+            echo "WORKERS_SUBDOMAIN=$current" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          # A subdomain is account-wide and permanent, so first choice is the
+          # plain family name; the rest are fallbacks for when it is taken.
+          for candidate in christadore christadore-os christadoreos christadore-family; do
+            body=$(curl -sS -X PUT "$api" -H "$auth" -H 'Content-Type: application/json' \
+              --data "{\"subdomain\":\"$candidate\"}")
+            if [ "$(echo "$body" | jq -r '.success')" = "true" ]; then
+              echo "Registered: $candidate.workers.dev"
+              echo "WORKERS_SUBDOMAIN=$candidate" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            echo "'$candidate' not available: $(echo "$body" | jq -c '.errors')"
+          done
+
+          echo "::error::Could not register a workers.dev subdomain automatically."
+          echo "Register one by hand, then re-run this workflow:"
+          echo "  https://dash.cloudflare.com/$account_id/workers/onboarding"
+          exit 1
+
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
@@ -75,3 +114,22 @@ jobs:
             HOUSEHOLD_KEY
         env:
           HOUSEHOLD_KEY: ${{ secrets.HOUSEHOLD_KEY }}
+
+      # The worker URL is the one thing that has to be typed into the app, so
+      # put it on the run's summary page rather than buried in the log.
+      - name: Report worker URL
+        run: |
+          name=$(sed -n 's/^name *= *"\(.*\)"/\1/p' wrangler.toml)
+          url="https://$name.$WORKERS_SUBDOMAIN.workers.dev"
+          {
+            echo "### Bank worker deployed"
+            echo ""
+            echo "Worker URL — paste this into Settings → Bank balance:"
+            echo ""
+            echo '```'
+            echo "$url"
+            echo '```'
+            echo ""
+            echo "Check it is live: [$url/bank/health]($url/bank/health)"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Worker URL: $url"
