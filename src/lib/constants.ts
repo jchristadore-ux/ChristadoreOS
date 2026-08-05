@@ -1,4 +1,4 @@
-import type { EventColor, ExpenseCategory, GroceryCategory, RepeatRule } from './storage';
+import type { BillCategory, EventColor, ExpenseCategory, GroceryCategory, RepeatRule } from './storage';
 
 interface ColorTokens {
   /** Solid fill for dots and chips. */
@@ -121,3 +121,33 @@ export const REPEAT_LABELS: Record<RepeatRule, string> = {
 };
 
 export const MEMBER_EMOJI = ['🙂', '🧑', '👩', '👨', '🧒', '👶', '🐶', '🐱', '⭐️', '🌻'];
+
+export const BILL_CATEGORIES: BillCategory[] = [
+  'Housing',
+  'Utilities',
+  'Insurance',
+  'Debt',
+  'Subscriptions',
+  'Childcare',
+  'Other',
+];
+
+export const BILL_CATEGORY_EMOJI: Record<BillCategory, string> = {
+  Housing: '🏠',
+  Utilities: '💡',
+  Insurance: '🛡️',
+  Debt: '💳',
+  Subscriptions: '🔁',
+  Childcare: '🧸',
+  Other: '📄',
+};
+
+export const BILL_CATEGORY_COLOR: Record<BillCategory, string> = {
+  Housing: '#6D4FEC',
+  Utilities: '#07BCF1',
+  Insurance: '#0FB39A',
+  Debt: '#F43F5E',
+  Subscriptions: '#A855F7',
+  Childcare: '#F59E0B',
+  Other: '#7C859F',
+};

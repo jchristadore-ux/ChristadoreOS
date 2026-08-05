@@ -4,6 +4,7 @@ import {
   AlarmClock,
   Bell,
   CalendarDays,
+  Receipt,
   ShoppingCart,
   Timer,
   Wallet,
@@ -12,10 +13,19 @@ import { CardHeader, EmptyLine, LinkCard } from '../components/ui/Card';
 import { MemberStack } from '../components/MemberPicker';
 import { countdownParts, useMinuteTick } from './Countdowns';
 import { eventTimeLabel } from './Calendar';
-import { EVENT_COLORS } from '../lib/constants';
+import { BILL_CATEGORY_EMOJI, EVENT_COLORS } from '../lib/constants';
 import { formatMoney, formatMoneyShort, greeting, parseIso, toDateKey } from '../lib/format';
+import { billsDueToday, billsOverdue } from '../lib/bills';
 import { nextOccurrence } from '../lib/notifications';
-import type { Countdown, Expense, FamilyEvent, GroceryItem, Member, Reminder } from '../lib/storage';
+import type {
+  Bill,
+  Countdown,
+  Expense,
+  FamilyEvent,
+  GroceryItem,
+  Member,
+  Reminder,
+} from '../lib/storage';
 import { useCollection } from '../lib/storage/useCollection';
 import { useAppSettings } from '../lib/useSettings';
 
@@ -30,6 +40,7 @@ export default function Today() {
   const { items: groceries } = useCollection<GroceryItem>('groceries');
   const { items: expenses } = useCollection<Expense>('expenses');
   const { items: reminders } = useCollection<Reminder>('reminders');
+  const { items: bills } = useCollection<Bill>('bills');
   const { settings } = useAppSettings();
 
   const todayEvents = useMemo(
@@ -60,6 +71,13 @@ export default function Today() {
         .filter((expense) => expense.date === todayKey)
         .reduce((sum, expense) => sum + expense.amount, 0),
     [expenses, todayKey],
+  );
+
+  const dueToday = useMemo(() => billsDueToday(bills, now), [bills, now]);
+  const overdue = useMemo(() => billsOverdue(bills, now), [bills, now]);
+  const dueTodayTotal = useMemo(
+    () => dueToday.reduce((sum, bill) => sum + bill.amount, 0),
+    [dueToday],
   );
 
   const budgetPct = settings.dailyBudget > 0 ? (todaySpend / settings.dailyBudget) * 100 : 0;
@@ -197,6 +215,45 @@ export default function Today() {
               );
             })}
           </ul>
+        )}
+      </LinkCard>
+
+      <LinkCard to="/bills">
+        <CardHeader title="Bills" icon={<Receipt size={18} />} chevron />
+        {dueToday.length === 0 && overdue.length === 0 ? (
+          <EmptyLine>Nothing due today.</EmptyLine>
+        ) : (
+          <>
+            {dueToday.length > 0 ? (
+              <p className="text-3xl font-bold tracking-tight text-ink-700">
+                {formatMoney(dueTodayTotal)}
+              </p>
+            ) : null}
+            <ul className="mt-1.5 flex flex-col gap-2">
+              {dueToday.map((bill) => (
+                <li key={bill.id} className="flex items-center gap-2.5">
+                  <span aria-hidden="true">{BILL_CATEGORY_EMOJI[bill.category]}</span>
+                  <span className="min-w-0 flex-1 truncate font-medium text-ink-700">
+                    {bill.name}
+                  </span>
+                  <span className="shrink-0 text-sm font-semibold text-ink-500">
+                    {formatMoney(bill.amount)}
+                  </span>
+                </li>
+              ))}
+              {overdue.map((bill) => (
+                <li key={bill.id} className="flex items-center gap-2.5">
+                  <span aria-hidden="true">{BILL_CATEGORY_EMOJI[bill.category]}</span>
+                  <span className="min-w-0 flex-1 truncate font-medium text-ink-700">
+                    {bill.name}
+                  </span>
+                  <span className="shrink-0 rounded-full bg-red-50 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-700">
+                    Overdue
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </LinkCard>
 

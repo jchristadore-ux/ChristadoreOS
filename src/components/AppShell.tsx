@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import {
   Bell,
   CalendarDays,
+  Receipt,
   Home,
   LayoutGrid,
   Settings as SettingsIcon,
@@ -28,6 +29,7 @@ const PRIMARY_NAV: NavItem[] = [
 
 /** Everything behind "More" — promoted to the sidebar on desktop. */
 export const SECONDARY_NAV: NavItem[] = [
+  { to: '/bills', label: 'Bills', icon: <Receipt size={22} /> },
   { to: '/reminders', label: 'Reminders', icon: <Bell size={22} /> },
   { to: '/countdowns', label: 'Countdowns', icon: <Timer size={22} /> },
   { to: '/settings', label: 'Settings', icon: <SettingsIcon size={22} /> },

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
+import Bills from './routes/Bills';
 import CalendarRoute from './routes/Calendar';
 import Countdowns from './routes/Countdowns';
 import Groceries from './routes/Groceries';
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="groceries" element={<Groceries />} />
           <Route path="spending" element={<Spending />} />
           <Route path="more" element={<More />} />
+          <Route path="bills" element={<Bills />} />
           <Route path="reminders" element={<Reminders />} />
           <Route path="countdowns" element={<Countdowns />} />
           <Route path="settings" element={<Settings />} />

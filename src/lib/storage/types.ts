@@ -5,6 +5,7 @@ export type CollectionName =
   | 'reminders'
   | 'countdowns'
   | 'members'
+  | 'bills'
   | 'settings';
 
 export const COLLECTIONS: CollectionName[] = [
@@ -14,6 +15,7 @@ export const COLLECTIONS: CollectionName[] = [
   'reminders',
   'countdowns',
   'members',
+  'bills',
   'settings',
 ];
 
@@ -118,6 +120,31 @@ export interface Countdown extends BaseRecord {
   target: string;
   emoji: string;
   color: EventColor;
+}
+
+export type BillCategory =
+  | 'Housing'
+  | 'Utilities'
+  | 'Insurance'
+  | 'Debt'
+  | 'Subscriptions'
+  | 'Childcare'
+  | 'Other';
+
+export interface Bill extends BaseRecord {
+  name: string;
+  amount: number;
+  /** Day of the month it comes due, 1-31, clamped to short months. */
+  dueDay: number;
+  category: BillCategory;
+  /** Pulled automatically, so it only needs watching rather than paying. */
+  autopay: boolean;
+  memberId: string;
+  notes: string;
+  /** Paused bills stay on the books but drop out of totals and the dashboard. */
+  active: boolean;
+  /** yyyy-MM keys already settled, so paid history survives month rollover. */
+  paidMonths: string[];
 }
 
 export interface Member extends BaseRecord {
