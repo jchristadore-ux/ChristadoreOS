@@ -40,5 +40,10 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: worker
+          # Pushed to the worker on every deploy, so the household key never has
+          # to be set by hand in the Cloudflare dashboard.
+          secrets: |
+            HOUSEHOLD_KEY
+        env:
+          HOUSEHOLD_KEY: ${{ secrets.HOUSEHOLD_KEY }}
