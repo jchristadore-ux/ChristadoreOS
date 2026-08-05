@@ -36,6 +36,30 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # wrangler's own message for a missing token is a wall of prose about
+      # non-interactive environments. Fail earlier and say what to fix.
+      - name: Check required secrets
+        env:
+          API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          HOUSEHOLD_KEY: ${{ secrets.HOUSEHOLD_KEY }}
+        run: |
+          missing=""
+          [ -z "$API_TOKEN" ] && missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -z "$HOUSEHOLD_KEY" ] && missing="$missing HOUSEHOLD_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing"
+            echo ""
+            echo "Add them as SECRETS (not variables) at:"
+            echo "  Settings -> Secrets and variables -> Actions -> Secrets tab"
+            echo "  https://github.com/${GITHUB_REPOSITORY}/settings/secrets/actions"
+            echo ""
+            echo "The 'Secrets' and 'Variables' tabs sit next to each other on that"
+            echo "page and look identical. A value added under Variables is not"
+            echo "visible here, which is the usual cause of this failure."
+            exit 1
+          fi
+          echo "Both secrets are present."
+
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
