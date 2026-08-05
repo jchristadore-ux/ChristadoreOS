@@ -5,6 +5,7 @@ export type CollectionName =
   | 'reminders'
   | 'countdowns'
   | 'members'
+  | 'bills'
   | 'settings';
 
 export const COLLECTIONS: CollectionName[] = [
@@ -14,6 +15,7 @@ export const COLLECTIONS: CollectionName[] = [
   'reminders',
   'countdowns',
   'members',
+  'bills',
   'settings',
 ];
 
@@ -118,6 +120,41 @@ export interface Countdown extends BaseRecord {
   target: string;
   emoji: string;
   color: EventColor;
+}
+
+export type BillCategory =
+  | 'Housing'
+  | 'Utilities'
+  | 'Insurance'
+  | 'Debt'
+  | 'Subscriptions'
+  | 'Childcare'
+  | 'Other';
+
+export interface Bill extends BaseRecord {
+  name: string;
+  amount: number;
+  /** Day of the month it comes due, 1-31, clamped to short months. */
+  dueDay: number;
+  /**
+   * Second day of the month for bills that land twice a month, such as a
+   * mortgage on the 9th and the 23rd. Null for ordinary monthly bills. Each
+   * occurrence is charged in full and paid off independently.
+   */
+  secondDueDay: number | null;
+  category: BillCategory;
+  /** Pulled automatically, so it only needs watching rather than paying. */
+  autopay: boolean;
+  memberId: string;
+  notes: string;
+  /** Paused bills stay on the books but drop out of totals and the dashboard. */
+  active: boolean;
+  /**
+   * yyyy-MM-dd of each occurrence already settled. Keyed by the occurrence
+   * rather than the month so a twice-monthly bill can have the 9th paid while
+   * the 23rd is still outstanding.
+   */
+  paidDates: string[];
 }
 
 export interface Member extends BaseRecord {

@@ -4,6 +4,7 @@ import { PageHeader, SECONDARY_NAV } from '../components/AppShell';
 import { Card } from '../components/ui/Card';
 
 const DESCRIPTIONS: Record<string, string> = {
+  '/bills': 'What repeats every month, and what is still owed',
   '/reminders': 'Nudges and alarms while the app is open',
   '/countdowns': 'Days until the things everyone is waiting for',
   '/settings': 'Family members, budget, Google Calendar',
