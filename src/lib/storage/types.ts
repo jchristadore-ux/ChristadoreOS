@@ -136,6 +136,12 @@ export interface Bill extends BaseRecord {
   amount: number;
   /** Day of the month it comes due, 1-31, clamped to short months. */
   dueDay: number;
+  /**
+   * Second day of the month for bills that land twice a month, such as a
+   * mortgage on the 9th and the 23rd. Null for ordinary monthly bills. Each
+   * occurrence is charged in full and paid off independently.
+   */
+  secondDueDay: number | null;
   category: BillCategory;
   /** Pulled automatically, so it only needs watching rather than paying. */
   autopay: boolean;
@@ -143,8 +149,12 @@ export interface Bill extends BaseRecord {
   notes: string;
   /** Paused bills stay on the books but drop out of totals and the dashboard. */
   active: boolean;
-  /** yyyy-MM keys already settled, so paid history survives month rollover. */
-  paidMonths: string[];
+  /**
+   * yyyy-MM-dd of each occurrence already settled. Keyed by the occurrence
+   * rather than the month so a twice-monthly bill can have the 9th paid while
+   * the 23rd is still outstanding.
+   */
+  paidDates: string[];
 }
 
 export interface Member extends BaseRecord {

@@ -15,7 +15,7 @@ import { countdownParts, useMinuteTick } from './Countdowns';
 import { eventTimeLabel } from './Calendar';
 import { BILL_CATEGORY_EMOJI, EVENT_COLORS } from '../lib/constants';
 import { formatMoney, formatMoneyShort, greeting, parseIso, toDateKey } from '../lib/format';
-import { billsDueToday, billsOverdue } from '../lib/bills';
+import { occurrencesDueToday, occurrencesOverdue } from '../lib/bills';
 import { nextOccurrence } from '../lib/notifications';
 import type {
   Bill,
@@ -73,10 +73,10 @@ export default function Today() {
     [expenses, todayKey],
   );
 
-  const dueToday = useMemo(() => billsDueToday(bills, now), [bills, now]);
-  const overdue = useMemo(() => billsOverdue(bills, now), [bills, now]);
+  const dueToday = useMemo(() => occurrencesDueToday(bills, now), [bills, now]);
+  const overdue = useMemo(() => occurrencesOverdue(bills, now), [bills, now]);
   const dueTodayTotal = useMemo(
-    () => dueToday.reduce((sum, bill) => sum + bill.amount, 0),
+    () => dueToday.reduce((sum, row) => sum + row.bill.amount, 0),
     [dueToday],
   );
 
@@ -230,22 +230,22 @@ export default function Today() {
               </p>
             ) : null}
             <ul className="mt-1.5 flex flex-col gap-2">
-              {dueToday.map((bill) => (
-                <li key={bill.id} className="flex items-center gap-2.5">
-                  <span aria-hidden="true">{BILL_CATEGORY_EMOJI[bill.category]}</span>
+              {dueToday.map((row) => (
+                <li key={row.key + row.bill.id} className="flex items-center gap-2.5">
+                  <span aria-hidden="true">{BILL_CATEGORY_EMOJI[row.bill.category]}</span>
                   <span className="min-w-0 flex-1 truncate font-medium text-ink-700">
-                    {bill.name}
+                    {row.bill.name}
                   </span>
                   <span className="shrink-0 text-sm font-semibold text-ink-500">
-                    {formatMoney(bill.amount)}
+                    {formatMoney(row.bill.amount)}
                   </span>
                 </li>
               ))}
-              {overdue.map((bill) => (
-                <li key={bill.id} className="flex items-center gap-2.5">
-                  <span aria-hidden="true">{BILL_CATEGORY_EMOJI[bill.category]}</span>
+              {overdue.map((row) => (
+                <li key={row.key + row.bill.id} className="flex items-center gap-2.5">
+                  <span aria-hidden="true">{BILL_CATEGORY_EMOJI[row.bill.category]}</span>
                   <span className="min-w-0 flex-1 truncate font-medium text-ink-700">
-                    {bill.name}
+                    {row.bill.name}
                   </span>
                   <span className="shrink-0 rounded-full bg-red-50 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-red-700">
                     Overdue

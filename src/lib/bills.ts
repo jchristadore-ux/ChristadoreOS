@@ -1,45 +1,106 @@
 import { format, getDaysInMonth, isBefore, isSameDay, startOfDay } from 'date-fns';
 import type { Bill } from './storage';
 
-/** yyyy-MM, the key a bill is marked paid against. */
-export const toMonthKey = (date: Date): string => format(date, 'yyyy-MM');
+/** yyyy-MM-dd, the key an individual occurrence is marked paid against. */
+export const toDateKey = (date: Date): string => format(date, 'yyyy-MM-dd');
 
-/**
- * The date a bill falls due within a given month. A bill due on the 31st still
- * lands in February — on the last day of it.
- */
-export function dueDateIn(bill: Bill, month: Date): Date {
-  const day = Math.min(Math.max(1, bill.dueDay), getDaysInMonth(month));
-  const due = new Date(month.getFullYear(), month.getMonth(), day);
-  return startOfDay(due);
+/** Clamps a day-of-month rule to a month that may be shorter than it. */
+const clampDay = (day: number, month: Date): number =>
+  Math.min(Math.max(1, day), getDaysInMonth(month));
+
+/** The day-of-month rules for a bill, in order. One entry, or two. */
+export function dueDaysOf(bill: Bill): number[] {
+  const days = [bill.dueDay];
+  if (bill.secondDueDay !== null && bill.secondDueDay !== bill.dueDay) {
+    days.push(bill.secondDueDay);
+  }
+  return days.sort((a, b) => a - b);
 }
 
-export const isPaidIn = (bill: Bill, month: Date): boolean =>
-  bill.paidMonths.includes(toMonthKey(month));
+export const isTwiceMonthly = (bill: Bill): boolean => dueDaysOf(bill).length > 1;
+
+/**
+ * Every date this bill comes due within `month`. A rule of the 31st still lands
+ * in February — on the last day of it.
+ */
+export function dueDatesIn(bill: Bill, month: Date): Date[] {
+  const seen = new Set<number>();
+  const dates: Date[] = [];
+  for (const rule of dueDaysOf(bill)) {
+    const day = clampDay(rule, month);
+    // Two rules can collapse onto the same date in a short month (the 30th and
+    // the 31st both become Feb 28); that is one payment, not two.
+    if (seen.has(day)) continue;
+    seen.add(day);
+    dates.push(startOfDay(new Date(month.getFullYear(), month.getMonth(), day)));
+  }
+  return dates;
+}
+
+/** What a bill costs across a whole month, counting both occurrences. */
+export const monthlyCost = (bill: Bill, month: Date): number =>
+  bill.amount * dueDatesIn(bill, month).length;
 
 export type BillStatus = 'paid' | 'overdue' | 'today' | 'upcoming';
 
-export function billStatus(bill: Bill, month: Date, now: Date): BillStatus {
-  if (isPaidIn(bill, month)) return 'paid';
-  const due = dueDateIn(bill, month);
+export interface BillOccurrence {
+  bill: Bill;
+  due: Date;
+  /** yyyy-MM-dd — the key in `bill.paidDates`. */
+  key: string;
+  status: BillStatus;
+  /** 1-based position when a bill lands more than once in the month. */
+  index: number;
+  total: number;
+}
+
+function statusFor(bill: Bill, due: Date, now: Date, currentMonth: boolean): BillStatus {
+  if (bill.paidDates.includes(toDateKey(due))) return 'paid';
+  // Overdue and due-today only mean anything against today's date.
+  if (!currentMonth) return 'upcoming';
   const today = startOfDay(now);
   if (isSameDay(due, today)) return 'today';
   return isBefore(due, today) ? 'overdue' : 'upcoming';
 }
 
-/** Active bills due today and not yet marked paid. Drives the Today card. */
-export function billsDueToday(bills: Bill[], now: Date): Bill[] {
-  return bills
-    .filter((bill) => bill.active && billStatus(bill, now, now) === 'today')
-    .sort((a, b) => b.amount - a.amount);
+/** Flattens bills into their individual occurrences within a month. */
+export function occurrencesIn(
+  bills: Bill[],
+  month: Date,
+  now: Date,
+  currentMonth: boolean,
+): BillOccurrence[] {
+  const rows: BillOccurrence[] = [];
+  for (const bill of bills) {
+    const dates = dueDatesIn(bill, month);
+    dates.forEach((due, i) => {
+      rows.push({
+        bill,
+        due,
+        key: toDateKey(due),
+        status: statusFor(bill, due, now, currentMonth),
+        index: i + 1,
+        total: dates.length,
+      });
+    });
+  }
+  return rows.sort((a, b) => {
+    if (a.bill.active !== b.bill.active) return a.bill.active ? -1 : 1;
+    return a.due.getTime() - b.due.getTime();
+  });
 }
 
-/** Active bills whose due date has passed this month with nothing recorded. */
-export function billsOverdue(bills: Bill[], now: Date): Bill[] {
-  return bills
-    .filter((bill) => bill.active && billStatus(bill, now, now) === 'overdue')
-    .sort((a, b) => dueDateIn(a, now).getTime() - dueDateIn(b, now).getTime());
-}
+/** Active occurrences due today and not yet marked paid. Drives the Today card. */
+export const occurrencesDueToday = (bills: Bill[], now: Date): BillOccurrence[] =>
+  occurrencesIn(bills.filter((bill) => bill.active), now, now, true)
+    .filter((row) => row.status === 'today')
+    .sort((a, b) => b.bill.amount - a.bill.amount);
+
+/** Active occurrences whose date has passed this month with nothing recorded. */
+export const occurrencesOverdue = (bills: Bill[], now: Date): BillOccurrence[] =>
+  occurrencesIn(bills.filter((bill) => bill.active), now, now, true).filter(
+    (row) => row.status === 'overdue',
+  );
 
 export interface MonthTotals {
   total: number;
@@ -47,19 +108,24 @@ export interface MonthTotals {
   remaining: number;
 }
 
-export function monthTotals(bills: Bill[], month: Date): MonthTotals {
-  const active = bills.filter((bill) => bill.active);
-  const total = active.reduce((sum, bill) => sum + bill.amount, 0);
-  const paid = active
-    .filter((bill) => isPaidIn(bill, month))
-    .reduce((sum, bill) => sum + bill.amount, 0);
+export function monthTotals(bills: Bill[], month: Date, now: Date, currentMonth: boolean): MonthTotals {
+  const rows = occurrencesIn(
+    bills.filter((bill) => bill.active),
+    month,
+    now,
+    currentMonth,
+  );
+  const total = rows.reduce((sum, row) => sum + row.bill.amount, 0);
+  const paid = rows
+    .filter((row) => row.status === 'paid')
+    .reduce((sum, row) => sum + row.bill.amount, 0);
   return { total, paid, remaining: total - paid };
 }
 
-/** Adds or removes the month key, leaving other months' history untouched. */
-export function togglePaidMonths(bill: Bill, month: Date): string[] {
-  const key = toMonthKey(month);
-  return bill.paidMonths.includes(key)
-    ? bill.paidMonths.filter((entry) => entry !== key)
-    : [...bill.paidMonths, key];
+/** Adds or removes one occurrence's key, leaving every other date untouched. */
+export function togglePaidDates(bill: Bill, due: Date): string[] {
+  const key = toDateKey(due);
+  return bill.paidDates.includes(key)
+    ? bill.paidDates.filter((entry) => entry !== key)
+    : [...bill.paidDates, key];
 }

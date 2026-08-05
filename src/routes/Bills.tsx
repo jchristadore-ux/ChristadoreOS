@@ -10,11 +10,11 @@ import { MemberSelect } from '../components/MemberPicker';
 import { BILL_CATEGORIES, BILL_CATEGORY_COLOR, BILL_CATEGORY_EMOJI } from '../lib/constants';
 import { formatMoney } from '../lib/format';
 import {
-  billStatus,
-  dueDateIn,
-  isPaidIn,
+  monthlyCost,
   monthTotals,
-  togglePaidMonths,
+  occurrencesIn,
+  togglePaidDates,
+  type BillOccurrence,
   type BillStatus,
 } from '../lib/bills';
 import type { Bill, BillCategory, Member } from '../lib/storage';
@@ -24,6 +24,8 @@ interface Draft {
   name: string;
   amount: string;
   dueDay: string;
+  secondDueDay: string;
+  twiceMonthly: boolean;
   category: BillCategory;
   autopay: boolean;
   memberId: string;
@@ -35,6 +37,8 @@ const emptyDraft = (): Draft => ({
   name: '',
   amount: '',
   dueDay: '1',
+  secondDueDay: '15',
+  twiceMonthly: false,
   category: 'Utilities',
   autopay: false,
   memberId: '',
@@ -67,26 +71,16 @@ export default function Bills() {
   const now = useMemo(() => new Date(), []);
   const viewingCurrentMonth = isSameMonth(cursor, now);
 
-  const totals = useMemo(() => monthTotals(bills, cursor), [bills, cursor]);
+  const totals = useMemo(
+    () => monthTotals(bills, cursor, now, viewingCurrentMonth),
+    [bills, cursor, now, viewingCurrentMonth],
+  );
 
-  const rows = useMemo(() => {
-    return bills
-      .map((bill) => ({
-        bill,
-        due: dueDateIn(bill, cursor),
-        // Status is only meaningful against today for the current month; other
-        // months are just paid or not.
-        status: viewingCurrentMonth
-          ? billStatus(bill, cursor, now)
-          : isPaidIn(bill, cursor)
-            ? ('paid' as const)
-            : ('upcoming' as const),
-      }))
-      .sort((a, b) => {
-        if (a.bill.active !== b.bill.active) return a.bill.active ? -1 : 1;
-        return a.due.getTime() - b.due.getTime();
-      });
-  }, [bills, cursor, now, viewingCurrentMonth]);
+  // One row per occurrence, so a twice-monthly bill is checked off twice.
+  const rows = useMemo(
+    () => occurrencesIn(bills, cursor, now, viewingCurrentMonth),
+    [bills, cursor, now, viewingCurrentMonth],
+  );
 
   const openNew = () => {
     setEditingId(null);
@@ -100,6 +94,8 @@ export default function Bills() {
       name: bill.name,
       amount: String(bill.amount),
       dueDay: String(bill.dueDay),
+      secondDueDay: String(bill.secondDueDay ?? 15),
+      twiceMonthly: bill.secondDueDay !== null,
       category: bill.category,
       autopay: bill.autopay,
       memberId: bill.memberId,
@@ -115,10 +111,13 @@ export default function Bills() {
     const dueDay = Number.parseInt(draft.dueDay, 10);
     if (!name || !Number.isFinite(amount) || amount < 0) return;
 
+    const second = Number.parseInt(draft.secondDueDay, 10);
     const payload = {
       name,
       amount: Math.round(amount * 100) / 100,
       dueDay: Number.isFinite(dueDay) ? Math.min(31, Math.max(1, dueDay)) : 1,
+      secondDueDay:
+        draft.twiceMonthly && Number.isFinite(second) ? Math.min(31, Math.max(1, second)) : null,
       category: draft.category,
       autopay: draft.autopay,
       memberId: draft.memberId,
@@ -127,12 +126,12 @@ export default function Bills() {
     };
 
     if (editingId) await update(editingId, payload);
-    else await create({ ...payload, paidMonths: [] });
+    else await create({ ...payload, paidDates: [] });
     setSheetOpen(false);
   };
 
-  const togglePaid = async (bill: Bill) => {
-    await update(bill.id, { paidMonths: togglePaidMonths(bill, cursor) });
+  const togglePaid = async (row: BillOccurrence) => {
+    await update(row.bill.id, { paidDates: togglePaidDates(row.bill, row.due) });
   };
 
   return (
@@ -209,25 +208,24 @@ export default function Bills() {
             />
           ) : (
             <ul className="flex flex-col gap-1">
-              {rows.map(({ bill, due, status }) => {
+              {rows.map((row) => {
+                const { bill, due, status, key, index, total } = row;
                 const style = STATUS_STYLE[status];
                 const member = members.find((entry) => entry.id === bill.memberId);
                 return (
                   <li
-                    key={bill.id}
+                    key={key + bill.id}
                     className={`flex items-center gap-3 rounded-2xl px-2 py-2 ${
                       bill.active ? '' : 'opacity-50'
                     }`}
                   >
                     <button
                       type="button"
-                      aria-label={
-                        status === 'paid'
-                          ? `Mark ${bill.name} unpaid for ${format(cursor, 'MMMM')}`
-                          : `Mark ${bill.name} paid for ${format(cursor, 'MMMM')}`
-                      }
+                      aria-label={`${status === 'paid' ? 'Mark unpaid' : 'Mark paid'}: ${
+                        bill.name
+                      } ${format(due, 'MMMM d')}`}
                       aria-pressed={status === 'paid'}
-                      onClick={() => void togglePaid(bill)}
+                      onClick={() => void togglePaid(row)}
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
                         status === 'paid'
                           ? 'border-emerald-500 bg-emerald-500 text-white'
@@ -237,6 +235,8 @@ export default function Bills() {
                       <Check size={20} />
                     </button>
 
+                    {/* Name owns the full width; the amount moves to the meta
+                        line so long biller names are not truncated at 390px. */}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         <span aria-hidden="true">{BILL_CATEGORY_EMOJI[bill.category]}</span>
@@ -251,25 +251,23 @@ export default function Bills() {
                           <Zap size={13} className="shrink-0 text-iris-400" aria-label="Autopay" />
                         ) : null}
                       </div>
-                      {/* Both the recurring rule and the concrete date for the
-                          month in view, since they diverge in short months. */}
-                      <div className="truncate text-xs text-ink-400">
-                        {ordinal(bill.dueDay)} · {format(due, 'EEE, MMM d')}
-                        {member ? ` · ${member.emoji}` : ''}
-                      </div>
-                    </div>
-
-                    <div className="flex shrink-0 flex-col items-end gap-0.5">
-                      <span className="tabular-nums font-semibold text-ink-700">
-                        {formatMoney(bill.amount)}
-                      </span>
-                      {style.label ? (
-                        <span
-                          className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${style.chip}`}
-                        >
-                          {style.label}
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <span className="shrink-0 font-bold tabular-nums text-ink-600">
+                          {formatMoney(bill.amount)}
                         </span>
-                      ) : null}
+                        <span className="truncate text-ink-400">
+                          {format(due, 'EEE, MMM d')}
+                          {total > 1 ? ` · ${index} of ${total}` : ` · ${ordinal(bill.dueDay)}`}
+                          {member ? ` · ${member.emoji}` : ''}
+                        </span>
+                        {style.label ? (
+                          <span
+                            className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${style.chip}`}
+                          >
+                            {style.label}
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
 
                     <IconButton label={`Edit ${bill.name}`} onClick={() => openEdit(bill)}>
@@ -289,7 +287,7 @@ export default function Bills() {
               {BILL_CATEGORIES.map((category) => {
                 const amount = bills
                   .filter((bill) => bill.active && bill.category === category)
-                  .reduce((sum, bill) => sum + bill.amount, 0);
+                  .reduce((sum, bill) => sum + monthlyCost(bill, cursor), 0);
                 if (amount === 0) return null;
                 return (
                   <li key={category}>
@@ -353,6 +351,7 @@ export default function Bills() {
           <FieldRow>
             <Input
               label="Amount"
+              hint={draft.twiceMonthly ? 'Charged in full on each date' : undefined}
               inputMode="decimal"
               value={draft.amount}
               onChange={(event) => setDraft({ ...draft, amount: event.target.value })}
@@ -367,6 +366,22 @@ export default function Bills() {
               placeholder="15"
             />
           </FieldRow>
+          <Toggle
+            label="Twice a month"
+            description="For a mortgage or loan that lands on two dates."
+            checked={draft.twiceMonthly}
+            onChange={(twiceMonthly) => setDraft({ ...draft, twiceMonthly })}
+          />
+          {draft.twiceMonthly ? (
+            <Input
+              label="Second due day"
+              hint="The other day of the month it comes out"
+              inputMode="numeric"
+              value={draft.secondDueDay}
+              onChange={(event) => setDraft({ ...draft, secondDueDay: event.target.value })}
+              placeholder="23"
+            />
+          ) : null}
           <Select
             label="Category"
             value={draft.category}
@@ -403,10 +418,18 @@ export default function Bills() {
             onChange={(memberId) => setDraft({ ...draft, memberId })}
             emptyLabel="Household"
           />
-          {draft.dueDay.trim() !== '' && Number.parseInt(draft.dueDay, 10) > 28 ? (
+          {[draft.dueDay, draft.twiceMonthly ? draft.secondDueDay : '']
+            .map((value) => Number.parseInt(value, 10))
+            .some((day) => Number.isFinite(day) && day > 28) ? (
             <p className="rounded-2xl bg-mist-100 p-3 text-xs text-ink-500">
-              Months shorter than the {ordinal(Number.parseInt(draft.dueDay, 10))} will show this on
-              their last day, so it never disappears from February.
+              Any month shorter than that day shows the bill on its last day instead, so it never
+              disappears from February.
+            </p>
+          ) : null}
+          {draft.twiceMonthly && draft.amount.trim() !== '' ? (
+            <p className="rounded-2xl bg-iris-50 p-3 text-xs text-iris-600">
+              Counts as {formatMoney((Number.parseFloat(draft.amount) || 0) * 2)} per month across
+              both dates.
             </p>
           ) : null}
         </div>
