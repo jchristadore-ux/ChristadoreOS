@@ -17,7 +17,7 @@ the first time you open it.
 | **Spending**   | Log expenses by category, Today / Week / Month totals, 30-day trend chart          |
 | **Reminders**  | Timed nudges and alarms with optional repeat, delivered by browser notifications    |
 | **Countdowns** | Days, hours, and minutes until the things everyone keeps asking about               |
-| **Settings**   | Family members, daily budget, Google Calendar connection, reset demo data           |
+| **Settings**   | Family members, daily budget, Google Calendar connection, clear all data             |
 
 Family members are labels used for assignment and filtering — there are no accounts
 and no login.
@@ -29,9 +29,10 @@ npm install
 npm run dev        # http://localhost:5173/FamilyOS/
 ```
 
-That's the whole setup. No environment variables are required; the app seeds a
-demo family on first run so every screen has something in it. `Settings → Reset
-demo data` puts it back.
+That's the whole setup. No environment variables are required. The app starts
+empty — first run creates a single family member named "Me" and nothing else, so
+every screen shows its empty state until you add something. `Settings → Clear all
+data` returns any device to that same blank slate.
 
 ```bash
 npm run typecheck  # tsc --noEmit

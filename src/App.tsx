@@ -10,7 +10,7 @@ import Settings from './routes/Settings';
 import Spending from './routes/Spending';
 import Today from './routes/Today';
 import { startReminderScheduler } from './lib/notifications';
-import { ensureSeeded } from './lib/seed';
+import { ensureBootstrapped } from './lib/bootstrap';
 import { useGoogleSync } from './lib/useGoogleSync';
 
 /** Mounted once so the 15-minute cache refresh runs on app open. */
@@ -24,7 +24,7 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
-    void ensureSeeded().then(() => {
+    void ensureBootstrapped().then(() => {
       if (!cancelled) setReady(true);
     });
     return () => {

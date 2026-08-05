@@ -17,8 +17,8 @@ import {
   listGoogleCalendars,
   type GoogleCalendarSummary,
 } from '../lib/google';
-import { resetDemoData } from '../lib/seed';
-import { storage, type EventColor, type Member } from '../lib/storage';
+import { clearAllData } from '../lib/bootstrap';
+import { DEFAULT_SETTINGS, storage, type EventColor, type Member } from '../lib/storage';
 import { useCollection } from '../lib/storage/useCollection';
 import { useAppSettings, useGoogleCacheMeta } from '../lib/useSettings';
 import { useGoogleSync } from '../lib/useGoogleSync';
@@ -118,9 +118,9 @@ export default function Settings() {
   };
 
   const reset = async () => {
-    await resetDemoData();
+    await clearAllData();
     setConfirmReset(false);
-    setBudgetInput('75');
+    setBudgetInput(String(DEFAULT_SETTINGS.dailyBudget));
   };
 
   return (
@@ -294,13 +294,14 @@ export default function Settings() {
         </Card>
 
         <Card>
-          <CardHeader title="Demo data" />
+          <CardHeader title="Clear all data" />
           <p className="mb-3 text-sm text-ink-500">
-            Replace everything on this device with the sample family, list, and history FamilyOS
-            ships with.
+            Erase everything stored on this device — events, groceries, expenses, reminders,
+            countdowns, and family members — and start from an empty app. This only affects this
+            device, and it cannot be undone.
           </p>
           <Button variant="secondary" size="sm" onClick={() => setConfirmReset(true)}>
-            Reset demo data
+            Clear all data
           </Button>
         </Card>
       </div>
@@ -353,9 +354,9 @@ export default function Settings() {
 
       <ConfirmDialog
         open={confirmReset}
-        title="Reset demo data?"
-        message="Everything currently saved on this device will be replaced with the sample data."
-        confirmLabel="Reset"
+        title="Clear all data?"
+        message="Everything saved on this device will be erased and the app will start empty, with just a single family member named Me. This cannot be undone."
+        confirmLabel="Clear everything"
         onConfirm={() => void reset()}
         onCancel={() => setConfirmReset(false)}
       />
