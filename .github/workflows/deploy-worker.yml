@@ -40,7 +40,11 @@ jobs:
       # non-interactive environments. Fail earlier and say what to fix.
       - name: Check required secrets
         env:
-          API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # "Cloudflare" is easy to type as "Cloudfare", and GitHub shows an API
+          # token only once — so a misspelled secret cannot simply be retyped
+          # under the right name. Accept either spelling rather than making the
+          # token be regenerated.
+          API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFARE_API_TOKEN }}
           HOUSEHOLD_KEY: ${{ secrets.HOUSEHOLD_KEY }}
         run: |
           missing=""
@@ -50,12 +54,12 @@ jobs:
             echo "::error::Missing repository secret(s):$missing"
             echo ""
             echo "Add them as SECRETS (not variables) at:"
-            echo "  Settings -> Secrets and variables -> Actions -> Secrets tab"
             echo "  https://github.com/${GITHUB_REPOSITORY}/settings/secrets/actions"
             echo ""
-            echo "The 'Secrets' and 'Variables' tabs sit next to each other on that"
-            echo "page and look identical. A value added under Variables is not"
-            echo "visible here, which is the usual cause of this failure."
+            echo "Two things commonly go wrong:"
+            echo "  1. Spelling. It is CLOUDFLARE, not CLOUDFARE."
+            echo "  2. Tab. Secrets and Variables sit side by side and look the"
+            echo "     same; a value under Variables is invisible to secrets.*"
             exit 1
           fi
           echo "Both secrets are present."
@@ -63,6 +67,11 @@ jobs:
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFARE_API_TOKEN }}
           workingDirectory: worker
+          # Pushed to the worker on every deploy, so the household key never has
+          # to be set by hand in the Cloudflare dashboard.
+          secrets: |
+            HOUSEHOLD_KEY
+        env:
+          HOUSEHOLD_KEY: ${{ secrets.HOUSEHOLD_KEY }}

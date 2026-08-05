@@ -2,16 +2,17 @@ name = "christadoreos-bank"
 main = "src/index.ts"
 compatibility_date = "2024-11-01"
 
-# Created once in the Cloudflare dashboard (Storage & Databases -> KV).
-# Paste the namespace ID here; it is an identifier, not a secret.
+# Account and namespace IDs are identifiers, not credentials — nothing can be
+# done with either on its own — so they live here rather than in secrets.
+# The API token and HOUSEHOLD_KEY are the real secrets and come from GitHub
+# Actions at deploy time.
+account_id = "ff4b01fbc362a9e794842a52c0ce2996"
+
 [[kv_namespaces]]
 binding = "BANK"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+id = "3779612842304849a6d68cc0a0680250"
 
 [vars]
 # Origins allowed to call this worker. The first entry is the fallback used
 # when a request arrives with no Origin header.
 ALLOWED_ORIGINS = "https://jchristadore-ux.github.io,http://localhost:5173"
-
-# HOUSEHOLD_KEY is NOT set here — it is a secret:
-#   Workers & Pages -> christadoreos-bank -> Settings -> Variables -> Add secret
