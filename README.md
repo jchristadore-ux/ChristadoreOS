@@ -26,7 +26,7 @@ and no login.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173/familyos/
+npm run dev        # http://localhost:5173/FamilyOS/
 ```
 
 That's the whole setup. No environment variables are required; the app seeds a
@@ -52,25 +52,28 @@ where the data lives.
 ## 1. Deploy to GitHub Pages
 
 The build is a static bundle served from a repository subpath, so it uses
-`HashRouter` (GitHub Pages has no SPA fallback) and a `base` of `/familyos/`.
+`HashRouter` (GitHub Pages has no SPA fallback) and a `base` of `/FamilyOS/`.
 
-1. **Create the repo.** Name it `familyos` — the repo name has to match `base` in
-   `vite.config.ts`. If you name it something else, change that one line (and the
+1. **Create the repo.** Name it `FamilyOS` — the repo name has to match `base` in
+   `vite.config.ts`, and GitHub Pages paths are **case-sensitive**, so the casing
+   has to match too. If you name it something else, change that one line (and the
    matching `base`, `scope`, and `start_url` in the `VitePWA` config) to
-   `/<your-repo-name>/`. GitHub Pages paths are **case-sensitive**: a repo named
-   `FamilyOS` needs `/FamilyOS/`. If you deploy to a user or org root page
+   `/<your-repo-name>/`. If you deploy to a user or org root page
    (`<username>.github.io`), set them all to `/` instead.
 
 2. **Push the code.**
 
    ```bash
-   git remote add origin https://github.com/<username>/familyos.git
+   git remote add origin https://github.com/<username>/FamilyOS.git
    git push -u origin main
    ```
 
-3. **Turn on Pages.** Repo → **Settings → Pages → Build and deployment → Source:
-   GitHub Actions**. There is no branch to pick; the workflow in
-   `.github/workflows/deploy.yml` publishes the artifact directly.
+3. **Pages turns itself on.** The workflow passes `enablement: true` to
+   `actions/configure-pages`, so the first run switches Pages to the GitHub
+   Actions source for you. If your plan doesn't allow it (Pages on a **private**
+   repo needs GitHub Pro, Team, or Enterprise), either make the repo public or set
+   it by hand at **Settings → Pages → Build and deployment → Source: GitHub
+   Actions**.
 
 4. **Add the Google client ID (optional).** Repo → **Settings → Secrets and
    variables → Actions → Variables → New repository variable**, named
@@ -85,7 +88,7 @@ The build is a static bundle served from a repository subpath, so it uses
 6. **Open it.** The live URL is:
 
    ```
-   https://<username>.github.io/familyos/
+   https://<username>.github.io/FamilyOS/
    ```
 
    On a phone, use the browser's **Add to Home Screen** to install it. On iOS this

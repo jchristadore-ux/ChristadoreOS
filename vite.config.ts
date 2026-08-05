@@ -4,13 +4,14 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   // Must match the GitHub repo name. Change to '/' if deploying to a user/org root page.
-  base: '/familyos/',
+  // Pages paths are case-sensitive, so this matches the repo's exact casing.
+  base: '/FamilyOS/',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      base: '/familyos/',
-      scope: '/familyos/',
+      base: '/FamilyOS/',
+      scope: '/FamilyOS/',
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'],
       manifest: {
         name: 'FamilyOS',
@@ -20,8 +21,8 @@ export default defineConfig({
         background_color: '#FAF7F2',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/familyos/',
-        start_url: '/familyos/',
+        scope: '/FamilyOS/',
+        start_url: '/FamilyOS/',
         icons: [
           {
             src: 'icons/icon-192.png',
@@ -45,7 +46,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
-        navigateFallback: '/familyos/index.html',
+        navigateFallback: '/FamilyOS/index.html',
       },
     }),
   ],
