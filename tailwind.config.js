@@ -4,37 +4,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Warm, domestic palette. Sand = surfaces, clay = the single accent.
-        sand: {
-          50: '#FAF7F2',
-          100: '#F4EFE7',
-          200: '#E9E1D5',
-          300: '#D9CDBB',
-          400: '#BFAE96',
-          500: '#9C8B72',
+        // Palette taken from the ChristadoreOS mark: a cyan-to-violet gradient
+        // on a cool lavender-grey ground, with a near-black navy for type.
+        mist: {
+          50: '#F7F8FC',
+          100: '#EFF1F8',
+          200: '#E2E6F1',
+          300: '#CDD3E5',
+          400: '#A5AEC8',
+          500: '#7C859F',
         },
-        clay: {
-          50: '#FBF1EA',
-          100: '#F5DFCE',
-          200: '#E8BE9E',
-          300: '#DA9A6D',
-          400: '#C2703D',
-          500: '#A85C2E',
-          600: '#8A4A24',
+        iris: {
+          50: '#F2EFFE',
+          100: '#E4DDFD',
+          200: '#C7BAFA',
+          300: '#A08DF5',
+          400: '#6D4FEC',
+          500: '#4F2BE7',
+          600: '#3F1FBE',
+        },
+        // The two ends of the logo gradient, for the wordmark and accents.
+        beam: {
+          start: '#07BCF1',
+          mid: '#4F2BE7',
+          end: '#6825C2',
         },
         ink: {
-          400: '#8B8279',
-          500: '#6B635B',
-          600: '#4A443E',
-          700: '#332F2B',
+          400: '#7A8199',
+          500: '#586074',
+          600: '#343B57',
+          700: '#151A35',
         },
       },
       fontFamily: {
         sans: ['ui-rounded', 'Nunito', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
+      backgroundImage: {
+        'beam-gradient': 'linear-gradient(135deg, #07BCF1 0%, #4F2BE7 58%, #6825C2 100%)',
+      },
       boxShadow: {
-        card: '0 1px 2px rgba(51, 47, 43, 0.04), 0 6px 20px -8px rgba(51, 47, 43, 0.12)',
-        sheet: '0 -8px 40px -12px rgba(51, 47, 43, 0.25)',
+        card: '0 1px 2px rgba(21, 26, 53, 0.04), 0 6px 20px -8px rgba(21, 26, 53, 0.14)',
+        sheet: '0 -8px 40px -12px rgba(21, 26, 53, 0.28)',
       },
       borderRadius: {
         '2xl': '1rem',

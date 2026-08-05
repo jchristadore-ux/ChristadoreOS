@@ -126,7 +126,7 @@ export const localAdapter: StorageAdapter = {
   },
 };
 
-/** Wipes every FamilyOS key. Used by "Reset demo data" in Settings. */
+/** Wipes every stored key. Used by "Clear all data" in Settings. */
 export function clearAllLocalData(): void {
   for (const collection of COLLECTIONS) {
     try {

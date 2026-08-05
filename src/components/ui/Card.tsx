@@ -40,11 +40,11 @@ interface CardHeaderProps {
 export function CardHeader({ title, icon, action, chevron = false }: CardHeaderProps) {
   return (
     <header className="mb-3 flex items-center gap-2">
-      {icon ? <span className="text-clay-400">{icon}</span> : null}
+      {icon ? <span className="text-iris-400">{icon}</span> : null}
       <h2 className="text-sm font-bold uppercase tracking-wide text-ink-400">{title}</h2>
       <div className="ml-auto flex items-center gap-1">
         {action}
-        {chevron ? <ChevronRight size={18} className="text-sand-400" /> : null}
+        {chevron ? <ChevronRight size={18} className="text-mist-400" /> : null}
       </div>
     </header>
   );

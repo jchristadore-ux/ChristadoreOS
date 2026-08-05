@@ -273,8 +273,8 @@ export default function Countdowns() {
                   onClick={() => setDraft({ ...draft, emoji })}
                   className={`flex h-11 w-11 items-center justify-center rounded-2xl border text-xl ${
                     draft.emoji === emoji
-                      ? 'border-clay-300 bg-clay-50'
-                      : 'border-sand-200 bg-white'
+                      ? 'border-iris-300 bg-iris-50'
+                      : 'border-mist-200 bg-white'
                   }`}
                 >
                   {emoji}

@@ -60,7 +60,7 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
 async function show(reminder: Reminder): Promise<void> {
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
   const options: NotificationOptions = {
-    body: reminder.isAlarm ? 'Alarm from FamilyOS' : 'Reminder from FamilyOS',
+    body: reminder.isAlarm ? 'Alarm from ChristadoreOS' : 'Reminder from ChristadoreOS',
     icon: `${import.meta.env.BASE_URL}icons/icon-192.png`,
     badge: `${import.meta.env.BASE_URL}icons/icon-192.png`,
     tag: reminder.id,

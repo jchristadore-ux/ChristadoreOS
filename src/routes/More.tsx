@@ -12,16 +12,16 @@ const DESCRIPTIONS: Record<string, string> = {
 export default function More() {
   return (
     <>
-      <PageHeader title="More" subtitle="The rest of FamilyOS" />
+      <PageHeader title="More" subtitle="The rest of ChristadoreOS" />
       <Card className="!p-2">
-        <ul className="flex flex-col divide-y divide-sand-100">
+        <ul className="flex flex-col divide-y divide-mist-100">
           {SECONDARY_NAV.map((item) => (
             <li key={item.to}>
               <Link
                 to={item.to}
-                className="flex min-h-[56px] items-center gap-3 rounded-2xl px-2 transition-colors hover:bg-sand-50"
+                className="flex min-h-[56px] items-center gap-3 rounded-2xl px-2 transition-colors hover:bg-mist-50"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-clay-50 text-clay-500">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-iris-50 text-iris-500">
                   {item.icon}
                 </span>
                 <span className="min-w-0 flex-1">
@@ -30,7 +30,7 @@ export default function More() {
                     {DESCRIPTIONS[item.to] ?? ''}
                   </span>
                 </span>
-                <ChevronRight size={18} className="shrink-0 text-sand-400" />
+                <ChevronRight size={18} className="shrink-0 text-mist-400" />
               </Link>
             </li>
           ))}

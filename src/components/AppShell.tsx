@@ -37,16 +37,19 @@ const SIDEBAR_NAV = [...PRIMARY_NAV.filter((item) => item.to !== '/more'), ...SE
 
 export function AppShell() {
   return (
-    <div className="min-h-screen bg-sand-50 md:flex">
+    <div className="min-h-screen bg-mist-50 md:flex">
       {/* Sidebar: md and up */}
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-sand-200 bg-sand-100/60 px-3 py-6 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-mist-200 bg-mist-100/60 px-3 py-6 md:flex">
         <div className="mb-6 flex items-center gap-2 px-3">
           <img
             src={`${import.meta.env.BASE_URL}icons/icon-192.png`}
             alt=""
             className="h-8 w-8 rounded-lg"
           />
-          <span className="text-lg font-bold text-ink-700">FamilyOS</span>
+          {/* Wordmark picks up the same cyan-to-violet ramp as the icon. */}
+          <span className="bg-beam-gradient bg-clip-text text-lg font-bold tracking-tight text-transparent">
+            ChristadoreOS
+          </span>
         </div>
         <nav className="flex flex-col gap-1">
           {SIDEBAR_NAV.map((item) => (
@@ -57,7 +60,7 @@ export function AppShell() {
               className={({ isActive }) =>
                 `flex min-h-[44px] items-center gap-3 rounded-2xl px-3 text-sm font-semibold transition-colors ${
                   isActive
-                    ? 'bg-white text-clay-500 shadow-card'
+                    ? 'bg-white text-iris-500 shadow-card'
                     : 'text-ink-500 hover:bg-white/70 hover:text-ink-700'
                 }`
               }
@@ -76,7 +79,7 @@ export function AppShell() {
       </div>
 
       {/* Bottom tab bar: mobile only */}
-      <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-sand-200 bg-sand-50/95 backdrop-blur md:hidden">
+      <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-mist-200 bg-mist-50/95 backdrop-blur md:hidden">
         <ul className="mx-auto flex max-w-lg">
           {PRIMARY_NAV.map((item) => (
             <li key={item.to} className="flex-1">
@@ -85,7 +88,7 @@ export function AppShell() {
                 end={item.to === '/'}
                 className={({ isActive }) =>
                   `flex min-h-[56px] flex-col items-center justify-center gap-0.5 py-1.5 text-[11px] font-semibold transition-colors ${
-                    isActive ? 'text-clay-500' : 'text-ink-400'
+                    isActive ? 'text-iris-500' : 'text-ink-400'
                   }`
                 }
               >

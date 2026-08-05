@@ -9,7 +9,7 @@
   }
 
   body {
-    @apply bg-sand-50 text-ink-700 font-sans antialiased;
+    @apply bg-mist-50 text-ink-700 font-sans antialiased;
     overscroll-behavior-y: none;
   }
 
@@ -30,7 +30,7 @@
   }
 
   ::selection {
-    @apply bg-clay-100;
+    @apply bg-iris-100;
   }
 }
 

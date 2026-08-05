@@ -131,7 +131,7 @@ export default function Settings() {
         <Card>
           <CardHeader title="Storage" icon={<HardDrive size={18} />} />
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-sand-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-ink-500">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-mist-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-ink-500">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               {storage.mode === 'local' ? 'Local mode' : 'Cloud mode'}
             </span>
@@ -141,7 +141,7 @@ export default function Settings() {
 
         <Card>
           <CardHeader title="Family" />
-          <ul className="mb-3 flex flex-col divide-y divide-sand-100">
+          <ul className="mb-3 flex flex-col divide-y divide-mist-100">
             {members.map((member) => (
               <li key={member.id} className="flex items-center gap-3 py-2">
                 <span className="text-xl" aria-hidden="true">
@@ -193,17 +193,17 @@ export default function Settings() {
         <Card>
           <CardHeader title="Google Calendar" />
           {!configured ? (
-            <div className="rounded-2xl bg-sand-100 p-3">
+            <div className="rounded-2xl bg-mist-100 p-3">
               <p className="text-sm font-semibold text-ink-600">Not configured</p>
               <p className="mt-1 text-xs text-ink-500">
                 Set <code className="rounded bg-white px-1">VITE_GOOGLE_CLIENT_ID</code> to turn this
-                on. Everything else in FamilyOS works without it.
+                on. Everything else in ChristadoreOS works without it.
               </p>
             </div>
           ) : !sync.connected ? (
             <div className="flex flex-col gap-2">
               <p className="text-sm text-ink-500">
-                Read your Google calendars into FamilyOS. Events stay read-only here.
+                Read your Google calendars into ChristadoreOS. Events stay read-only here.
               </p>
               <Button onClick={() => void connect()} disabled={connecting}>
                 {connecting ? 'Opening Google…' : 'Connect Google Calendar'}
@@ -249,13 +249,13 @@ export default function Settings() {
                             role="checkbox"
                             aria-checked={checked}
                             onClick={() => void toggleCalendar(calendar.id)}
-                            className="flex min-h-[44px] w-full items-center gap-3 rounded-2xl px-1 text-left hover:bg-sand-50"
+                            className="flex min-h-[44px] w-full items-center gap-3 rounded-2xl px-1 text-left hover:bg-mist-50"
                           >
                             <span
                               className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
                                 checked
-                                  ? 'border-clay-400 bg-clay-400 text-white'
-                                  : 'border-sand-300 bg-white'
+                                  ? 'border-iris-400 bg-iris-400 text-white'
+                                  : 'border-mist-300 bg-white'
                               }`}
                             >
                               {checked ? <Check size={14} /> : null}
@@ -336,8 +336,8 @@ export default function Settings() {
                   onClick={() => setMemberDraft({ ...memberDraft, emoji })}
                   className={`flex h-11 w-11 items-center justify-center rounded-2xl border text-xl ${
                     memberDraft.emoji === emoji
-                      ? 'border-clay-300 bg-clay-50'
-                      : 'border-sand-200 bg-white'
+                      ? 'border-iris-300 bg-iris-50'
+                      : 'border-mist-200 bg-white'
                   }`}
                 >
                   {emoji}

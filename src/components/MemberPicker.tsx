@@ -68,7 +68,7 @@ export function MemberPicker({ members, selected, onChange, label = 'Who' }: Mem
               className={`inline-flex min-h-[44px] items-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-colors ${
                 active
                   ? `${tokens.soft} ${tokens.border} ${tokens.text}`
-                  : 'border-sand-200 bg-white text-ink-400'
+                  : 'border-mist-200 bg-white text-ink-400'
               }`}
             >
               <span aria-hidden="true">{member.emoji}</span>
@@ -107,8 +107,8 @@ export function MemberSelect({
           onClick={() => onChange('')}
           className={`inline-flex min-h-[44px] items-center rounded-2xl border px-3 text-sm font-semibold transition-colors ${
             value === ''
-              ? 'border-sand-300 bg-sand-100 text-ink-600'
-              : 'border-sand-200 bg-white text-ink-400'
+              ? 'border-mist-300 bg-mist-100 text-ink-600'
+              : 'border-mist-200 bg-white text-ink-400'
           }`}
         >
           {emptyLabel}
@@ -125,7 +125,7 @@ export function MemberSelect({
               className={`inline-flex min-h-[44px] items-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-colors ${
                 active
                   ? `${tokens.soft} ${tokens.border} ${tokens.text}`
-                  : 'border-sand-200 bg-white text-ink-400'
+                  : 'border-mist-200 bg-white text-ink-400'
               }`}
             >
               <span aria-hidden="true">{member.emoji}</span>

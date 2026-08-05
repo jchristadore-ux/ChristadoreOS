@@ -40,11 +40,11 @@ export default function App() {
   if (!ready) {
     // First paint before seeding finishes: a skeleton, never a spinner.
     return (
-      <div className="min-h-screen bg-sand-50 p-4">
+      <div className="min-h-screen bg-mist-50 p-4">
         <div className="mx-auto flex max-w-3xl flex-col gap-3 pt-6">
-          <div className="h-8 w-40 animate-pulse rounded-2xl bg-sand-200" />
-          <div className="h-32 animate-pulse rounded-2xl bg-sand-100" />
-          <div className="h-32 animate-pulse rounded-2xl bg-sand-100" />
+          <div className="h-8 w-40 animate-pulse rounded-2xl bg-mist-200" />
+          <div className="h-32 animate-pulse rounded-2xl bg-mist-100" />
+          <div className="h-32 animate-pulse rounded-2xl bg-mist-100" />
         </div>
       </div>
     );

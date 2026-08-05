@@ -11,9 +11,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-clay-400 text-white hover:bg-clay-500 active:bg-clay-600 shadow-sm',
-  secondary: 'bg-white text-ink-700 border border-sand-200 hover:bg-sand-100 active:bg-sand-200',
-  ghost: 'text-ink-500 hover:bg-sand-100 active:bg-sand-200',
+  primary: 'bg-iris-400 text-white hover:bg-iris-500 active:bg-iris-600 shadow-sm',
+  secondary: 'bg-white text-ink-700 border border-mist-200 hover:bg-mist-100 active:bg-mist-200',
+  ghost: 'text-ink-500 hover:bg-mist-100 active:bg-mist-200',
   danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm',
 };
 
@@ -37,7 +37,7 @@ export function Button({
       type={type}
       className={[
         'inline-flex items-center justify-center rounded-2xl font-semibold transition-colors',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-400',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-iris-400',
         'disabled:opacity-40 disabled:pointer-events-none',
         VARIANTS[variant],
         SIZES[size],
@@ -66,8 +66,8 @@ export function IconButton({ label, className = '', children, ...rest }: IconBut
       title={label}
       className={[
         'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink-500',
-        'transition-colors hover:bg-sand-100 active:bg-sand-200',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-400',
+        'transition-colors hover:bg-mist-100 active:bg-mist-200',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-iris-400',
         'disabled:opacity-40 disabled:pointer-events-none',
         className,
       ]

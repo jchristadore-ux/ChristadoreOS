@@ -10,7 +10,7 @@ interface ImportMeta {
 }
 
 /* Google Identity Services, loaded at runtime from accounts.google.com. Only
-   the small surface FamilyOS actually calls is typed here. */
+   the small surface ChristadoreOS actually calls is typed here. */
 interface GoogleTokenResponse {
   access_token?: string;
   expires_in?: number;
