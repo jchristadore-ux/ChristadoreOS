@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-sand-50 text-ink-700 font-sans antialiased;
+    overscroll-behavior-y: none;
+  }
+
+  /* Inputs inherit the warm palette rather than the browser default chrome. */
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* iOS zooms in on focus for anything under 16px. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  ::selection {
+    @apply bg-clay-100;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Kills the text selection popup during a long-press-to-delete gesture. */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
